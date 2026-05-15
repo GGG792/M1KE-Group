@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Gamepad2, Zap, Code2, MessageCircle, Menu, X, ChevronRight, 
   Terminal, User, Star, Download, Share2, Globe, Shield, Sparkles, 
-  Search as SearchIcon, Copy, Check, Video, ExternalLink 
+  Search as SearchIcon, Copy, Check, Video, ExternalLink, Settings, 
+  Palette, Moon, Grid3X3, Sparkle,
+  Bell, Globe2, Layers, Droplet
 } from 'lucide-react'
 
 const App = () => {
@@ -11,12 +13,28 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrollY, setScrollY] = useState(0)
   const [selectedScript, setSelectedScript] = useState<any>(null)
+  const [backgroundType, setBackgroundType] = useState('grid')
+  const [settings, setSettings] = useState({
+    theme: 'dark',
+    language: 'zh',
+    notifications: true,
+    autoUpdate: true
+  })
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    scrollToTop()
+  }
 
   const scripts = [
     {
@@ -284,10 +302,25 @@ end)`
     { icon: Sparkles, title: '持续更新', desc: '每日更新，功能强大' },
   ]
 
+  const renderBackground = () => {
+    switch (backgroundType) {
+      case 'grid':
+        return <div className="grid-bg" />
+      case 'particles':
+        return <div className="particle-bg" />
+      case 'gradient':
+        return <div className="gradient-bg" />
+      case 'stars':
+        return <div className="stars-bg" />
+      default:
+        return <div className="grid-bg" />
+    }
+  }
+
   return (
     <div className="min-h-screen relative">
       {/* 粒子背景 */}
-      <div id="particles" className="grid-bg" />
+      {renderBackground()}
 
       {/* 导航栏 */}
       <motion.nav 
@@ -314,12 +347,14 @@ end)`
             {[
               { id: 'home', label: '首页', icon: Gamepad2 },
               { id: 'scripts', label: '脚本库', icon: Code2 },
+              { id: 'videos', label: '视频', icon: Video },
               { id: 'chat', label: 'QQ群', icon: MessageCircle },
+              { id: 'settings', label: '设置', icon: Settings },
               { id: 'about', label: '关于', icon: User },
             ].map((item) => (
               <motion.button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleTabChange(item.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                   activeTab === item.id 
                     ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400'
@@ -335,7 +370,7 @@ end)`
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="https://qm.qq.com/q/your-link"
+              href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-bold text-white hover:shadow-lg hover:shadow-cyan-500/30 transition-all"
@@ -366,13 +401,15 @@ end)`
                 {[
                   { id: 'home', label: '首页', icon: Gamepad2 },
                   { id: 'scripts', label: '脚本库', icon: Code2 },
+                  { id: 'videos', label: '视频', icon: Video },
                   { id: 'chat', label: 'QQ群', icon: MessageCircle },
+                  { id: 'settings', label: '设置', icon: Settings },
                   { id: 'about', label: '关于', icon: User },
                 ].map((item) => (
                   <button
                     key={item.id}
                     onClick={() => {
-                      setActiveTab(item.id)
+                      handleTabChange(item.id)
                       setIsMenuOpen(false)
                     }}
                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all hover:bg-white/5"
@@ -383,7 +420,7 @@ end)`
                 ))}
               </div>
               <div className="px-6 pb-6">
-                <a href="https://qm.qq.com/q/your-link" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-bold text-white">
+                <a href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg font-bold text-white">
                   <MessageCircle className="w-5 h-5" />
                   QQ群: 1104598406
                 </a>
@@ -402,8 +439,14 @@ end)`
           {activeTab === 'scripts' && (
             <ScriptsPage key="scripts" scripts={scripts} setSelectedScript={setSelectedScript} />
           )}
+          {activeTab === 'videos' && (
+            <VideosPage key="videos" scripts={scripts} />
+          )}
           {activeTab === 'chat' && (
             <QQGroupPage key="chat" />
+          )}
+          {activeTab === 'settings' && (
+            <SettingsPage key="settings" settings={settings} setSettings={setSettings} backgroundType={backgroundType} setBackgroundType={setBackgroundType} />
           )}
           {activeTab === 'about' && (
             <AboutPage key="about" />
@@ -518,7 +561,7 @@ const HomePage = ({ features, scripts, setActiveTab }: any) => {
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="https://qm.qq.com/q/your-link"
+              href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 rounded-xl font-bold text-lg glass hover:bg-white/10 transition-all"
@@ -571,37 +614,109 @@ const HomePage = ({ features, scripts, setActiveTab }: any) => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="glass rounded-3xl p-8 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30"
+          className="glass rounded-3xl p-8 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 overflow-hidden"
         >
-          <div className="aspect-video bg-black/40 rounded-2xl flex items-center justify-center border-2 border-dashed border-cyan-500/30 relative overflow-hidden">
-            {/* 模拟视频封面 */}
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/50 to-purple-900/50 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center animate-pulse">
-                  <Play className="w-12 h-12 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">M1KE GROUP 宣传视频</h3>
-                <p className="text-gray-300">点击播放精彩介绍</p>
-                <div className="mt-4 flex items-center justify-center gap-2 text-cyan-400">
-                  <Video className="w-5 h-5" />
-                  <span>时长: 3:45</span>
-                </div>
+          {/* 视频播放器模拟 */}
+          <div className="aspect-video bg-black/60 rounded-2xl relative overflow-hidden group cursor-pointer">
+            {/* 视频背景效果 */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-purple-900/30 to-black/50">
+              <div className="absolute inset-0 opacity-20">
+                <div className="grid-bg" />
               </div>
+            </div>
+            
+            {/* 播放按钮 */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-24 h-24 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all"
+              >
+                <Play className="w-12 h-12 text-white ml-2" />
+              </motion.div>
+            </div>
+
+            {/* 视频信息叠加层 */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            
+            {/* 顶部字幕 */}
+            <div className="absolute top-0 left-0 right-0 p-8 bg-gradient-to-b from-black/50 to-transparent">
+              <motion.h3 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-3xl font-bold text-white mb-2"
+              >
+                M1KE GROUP
+              </motion.h3>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-cyan-400 text-lg"
+              >
+                M1KE 集团 - 最专业的罗布乐思脚本社区
+              </motion.p>
+            </div>
+
+            {/* 底部字幕 */}
+            <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-2"
+              >
+                <p className="text-white text-xl font-medium">M1KE GROUP - The Best Roblox Script Community</p>
+                <p className="text-gray-300">解锁无限可能 · 享受极致游戏体验</p>
+                <p className="text-cyan-400 text-sm">Unlock Unlimited Possibilities · Enjoy Ultimate Gaming Experience</p>
+              </motion.div>
+              
+              {/* 视频控制条 */}
+              <div className="mt-4 flex items-center gap-4">
+                <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: "45%" }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                    className="h-full bg-gradient-to-r from-cyan-500 to-purple-500"
+                  />
+                </div>
+                <span className="text-white text-sm">1:42 / 3:45</span>
+              </div>
+            </div>
+
+            {/* 功能亮点 */}
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 space-y-4">
+              {[
+                { icon: Zap, label: '高速执行', en: 'High Speed' },
+                { icon: Shield, label: '安全可靠', en: 'Safe & Secure' },
+                { icon: Download, label: '免费下载', en: 'Free Download' },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 + i * 0.2 }}
+                  className="glass rounded-lg px-4 py-2 flex items-center gap-2"
+                >
+                  <item.icon className="w-4 h-4 text-cyan-400" />
+                  <span className="text-white text-sm">{item.label}</span>
+                </motion.div>
+              ))}
             </div>
           </div>
           
           <div className="mt-6 text-center">
-            <p className="text-gray-400 mb-4">视频正在上传中，敬请期待！</p>
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl font-bold text-white"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl font-bold text-white text-lg hover:shadow-lg hover:shadow-cyan-500/30 transition-all"
             >
-              <MessageCircle className="w-5 h-5" />
-              加入QQ群获取最新视频
+              <MessageCircle className="w-6 h-6" />
+              加入QQ群获取完整视频
             </motion.a>
           </div>
         </motion.div>
@@ -1102,7 +1217,7 @@ const ScriptModal = ({ script, onClose }: any) => {
           <motion.a
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            href="https://qm.qq.com/q/your-link"
+            href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 glass rounded-xl font-bold text-white hover:bg-white/10 transition-all"
@@ -1210,6 +1325,318 @@ const AboutPage = () => {
           ))}
         </div>
       </section>
+    </div>
+  )
+}
+
+const VideosPage = ({ scripts }: any) => {
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-12"
+      >
+        <h1 className="font-display text-5xl font-bold mb-4">
+          <span className="neon-cyan">视频教程</span>
+        </h1>
+        <p className="text-gray-400 text-lg">学习如何使用我们的脚本</p>
+      </motion.div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {scripts.map((script: any, i: number) => (
+          <motion.div
+            key={script.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="glass rounded-2xl overflow-hidden card-glow"
+          >
+            <div className="aspect-video bg-black/60 relative group cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-purple-900/30 to-black/50">
+                <div className="absolute inset-0 opacity-20">
+                  <div className="grid-bg" />
+                </div>
+              </div>
+              
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/50"
+                >
+                  <Play className="w-10 h-10 text-white ml-1" />
+                </motion.div>
+              </div>
+
+              <div className="absolute top-4 right-4 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full">
+                <span className="text-cyan-400 text-sm font-medium">{script.category}</span>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <h3 className="font-display text-xl font-bold mb-2">{script.name}</h3>
+              <p className="text-gray-400 text-sm mb-4 line-clamp-2">{script.description}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500 text-sm">by {script.author}</span>
+                <motion.a
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  href={script.video || "https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-lg text-sm font-bold text-white hover:shadow-lg transition-all flex items-center gap-1"
+                >
+                  <Video className="w-4 h-4" />
+                  观看教程
+                </motion.a>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-16 glass rounded-3xl p-8 text-center"
+      >
+        <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <MessageCircle className="w-10 h-10" />
+        </div>
+        <h3 className="font-display text-2xl font-bold mb-4">想要更多教程？</h3>
+        <p className="text-gray-400 mb-6 max-w-xl mx-auto">
+          加入我们的QQ群，获取更多视频教程和使用指南
+        </p>
+        <motion.a
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl font-bold text-white text-lg hover:shadow-lg hover:shadow-cyan-500/30 transition-all"
+        >
+          <MessageCircle className="w-6 h-6" />
+          加入QQ群: 1104598406
+        </motion.a>
+      </motion.div>
+    </div>
+  )
+}
+
+const SettingsPage = ({ settings, setSettings, backgroundType, setBackgroundType }: any) => {
+  const [saved, setSaved] = useState(false)
+
+  const handleSave = () => {
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const backgroundOptions = [
+    { id: 'grid', name: '网格背景', icon: Grid3X3, color: 'from-cyan-500 to-cyan-600' },
+    { id: 'particles', name: '粒子背景', icon: Sparkle, color: 'from-purple-500 to-purple-600' },
+    { id: 'gradient', name: '渐变背景', icon: Droplet, color: 'from-pink-500 to-pink-600' },
+    { id: 'stars', name: '星空背景', icon: Star, color: 'from-yellow-500 to-yellow-600' },
+  ]
+
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-12"
+      >
+        <h1 className="font-display text-5xl font-bold mb-4">
+          <span className="neon-purple">设置</span>
+        </h1>
+        <p className="text-gray-400 text-lg">自定义您的体验</p>
+      </motion.div>
+
+      <div className="space-y-6">
+        {/* 背景设置 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass rounded-2xl p-6"
+        >
+          <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
+            <Layers className="w-5 h-5 text-cyan-400" />
+            背景设置
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {backgroundOptions.map((bg) => (
+              <motion.button
+                key={bg.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setBackgroundType(bg.id)}
+                className={`p-4 rounded-xl transition-all border-2 ${
+                  backgroundType === bg.id
+                    ? 'border-cyan-500 bg-cyan-500/20'
+                    : 'border-transparent hover:border-gray-600'
+                }`}
+              >
+                <div className={`w-12 h-12 bg-gradient-to-br ${bg.color} rounded-lg mx-auto mb-2 flex items-center justify-center`}>
+                  <bg.icon className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-medium">{bg.name}</p>
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* 主题设置 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass rounded-2xl p-6"
+        >
+          <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
+            <Palette className="w-5 h-5 text-purple-400" />
+            主题设置
+          </h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl">
+              <div className="flex items-center gap-3">
+                <Moon className="w-5 h-5 text-purple-400" />
+                <div>
+                  <p className="font-medium">深色模式</p>
+                  <p className="text-sm text-gray-400">启用深色主题</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSettings({ ...settings, theme: settings.theme === 'dark' ? 'light' : 'dark' })}
+                className={`w-14 h-8 rounded-full transition-all ${
+                  settings.theme === 'dark' ? 'bg-cyan-500' : 'bg-gray-600'
+                }`}
+              >
+                <div className={`w-6 h-6 bg-white rounded-full transition-all shadow-lg ${
+                  settings.theme === 'dark' ? 'translate-x-7' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 语言设置 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass rounded-2xl p-6"
+        >
+          <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
+            <Globe2 className="w-5 h-5 text-green-400" />
+            语言设置
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { id: 'zh', name: '简体中文', flag: '🇨🇳' },
+              { id: 'en', name: 'English', flag: '🇺🇸' },
+              { id: 'tw', name: '繁體中文', flag: '🇹🇼' },
+            ].map((lang) => (
+              <motion.button
+                key={lang.id}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSettings({ ...settings, language: lang.id })}
+                className={`p-4 rounded-xl transition-all border-2 flex items-center gap-3 ${
+                  settings.language === lang.id
+                    ? 'border-cyan-500 bg-cyan-500/20'
+                    : 'border-transparent hover:border-gray-600'
+                }`}
+              >
+                <span className="text-2xl">{lang.flag}</span>
+                <span className="font-medium">{lang.name}</span>
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* 通知设置 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass rounded-2xl p-6"
+        >
+          <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2">
+            <Bell className="w-5 h-5 text-yellow-400" />
+            通知设置
+          </h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl">
+              <div className="flex items-center gap-3">
+                <Bell className="w-5 h-5 text-yellow-400" />
+                <div>
+                  <p className="font-medium">接收通知</p>
+                  <p className="text-sm text-gray-400">获取最新脚本更新通知</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSettings({ ...settings, notifications: !settings.notifications })}
+                className={`w-14 h-8 rounded-full transition-all ${
+                  settings.notifications ? 'bg-cyan-500' : 'bg-gray-600'
+                }`}
+              >
+                <div className={`w-6 h-6 bg-white rounded-full transition-all shadow-lg ${
+                  settings.notifications ? 'translate-x-7' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl">
+              <div className="flex items-center gap-3">
+                <Zap className="w-5 h-5 text-cyan-400" />
+                <div>
+                  <p className="font-medium">自动更新</p>
+                  <p className="text-sm text-gray-400">自动检查并更新脚本</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSettings({ ...settings, autoUpdate: !settings.autoUpdate })}
+                className={`w-14 h-8 rounded-full transition-all ${
+                  settings.autoUpdate ? 'bg-cyan-500' : 'bg-gray-600'
+                }`}
+              >
+                <div className={`w-6 h-6 bg-white rounded-full transition-all shadow-lg ${
+                  settings.autoUpdate ? 'translate-x-7' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 保存按钮 */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="flex justify-center pt-4"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSave}
+            className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl font-bold text-lg text-white hover:shadow-lg hover:shadow-cyan-500/30 transition-all flex items-center gap-2"
+          >
+            {saved ? (
+              <>
+                <CheckCircle2 className="w-6 h-6" />
+                保存成功！
+              </>
+            ) : (
+              <>
+                <Check className="w-6 h-6" />
+                保存设置
+              </>
+            )}
+          </motion.button>
+        </motion.div>
+      </div>
     </div>
   )
 }
