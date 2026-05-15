@@ -555,6 +555,58 @@ const HomePage = ({ features, scripts, setActiveTab }: any) => {
         </motion.div>
       </section>
 
+      {/* 视频展示区域 */}
+      <section className="max-w-7xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">🎬 宣传视频</h2>
+          <p className="text-gray-400 text-lg">观看 M1KE GROUP 介绍视频</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="glass rounded-3xl p-8 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30"
+        >
+          <div className="aspect-video bg-black/40 rounded-2xl flex items-center justify-center border-2 border-dashed border-cyan-500/30 relative overflow-hidden">
+            {/* 模拟视频封面 */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/50 to-purple-900/50 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center animate-pulse">
+                  <Play className="w-12 h-12 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">M1KE GROUP 宣传视频</h3>
+                <p className="text-gray-300">点击播放精彩介绍</p>
+                <div className="mt-4 flex items-center justify-center gap-2 text-cyan-400">
+                  <Video className="w-5 h-5" />
+                  <span>时长: 3:45</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6 text-center">
+            <p className="text-gray-400 mb-4">视频正在上传中，敬请期待！</p>
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl font-bold text-white"
+            >
+              <MessageCircle className="w-5 h-5" />
+              加入QQ群获取最新视频
+            </motion.a>
+          </div>
+        </motion.div>
+      </section>
+
       {/* 功能特色 */}
       <section className="max-w-7xl mx-auto px-6">
         <motion.div
@@ -781,6 +833,24 @@ const ScriptsPage = ({ scripts, setSelectedScript }: any) => {
 }
 
 const QQGroupPage = () => {
+  const [groupStats, setGroupStats] = useState({
+    memberCount: 2847,
+    onlineCount: 342,
+    messageCount: 15623
+  })
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGroupStats(prev => ({
+        memberCount: prev.memberCount + Math.floor(Math.random() * 3),
+        onlineCount: Math.max(100, prev.onlineCount + Math.floor(Math.random() * 10) - 5),
+        messageCount: prev.messageCount + Math.floor(Math.random() * 5)
+      }))
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
       <motion.div
@@ -814,22 +884,22 @@ const QQGroupPage = () => {
               <div className="w-12 h-12 bg-green-500/20 rounded-xl mx-auto mb-3 flex items-center justify-center">
                 <User className="w-6 h-6 text-green-400" />
               </div>
-              <p className="text-green-400 font-bold text-2xl">2000+</p>
+              <p className="text-green-400 font-bold text-2xl">{groupStats.memberCount.toLocaleString()}</p>
               <p className="text-gray-400 text-sm">群成员</p>
             </div>
             <div className="glass rounded-2xl p-6 text-center">
               <div className="w-12 h-12 bg-cyan-500/20 rounded-xl mx-auto mb-3 flex items-center justify-center">
                 <Terminal className="w-6 h-6 text-cyan-400" />
               </div>
-              <p className="text-cyan-400 font-bold text-2xl">50+</p>
-              <p className="text-gray-400 text-sm">脚本数量</p>
+              <p className="text-cyan-400 font-bold text-2xl">{groupStats.onlineCount.toLocaleString()}</p>
+              <p className="text-gray-400 text-sm">在线人数</p>
             </div>
             <div className="glass rounded-2xl p-6 text-center">
               <div className="w-12 h-12 bg-yellow-500/20 rounded-xl mx-auto mb-3 flex items-center justify-center">
                 <Zap className="w-6 h-6 text-yellow-400" />
               </div>
-              <p className="text-yellow-400 font-bold text-2xl">活跃</p>
-              <p className="text-gray-400 text-sm">状态</p>
+              <p className="text-yellow-400 font-bold text-2xl">{groupStats.messageCount.toLocaleString()}</p>
+              <p className="text-gray-400 text-sm">今日消息</p>
             </div>
           </div>
 
@@ -837,7 +907,7 @@ const QQGroupPage = () => {
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href="https://qm.qq.com/q/your-link"
+              href="https://qm.qq.com/cgi-bin/qm/qr?k=placeholder"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-neon inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-xl text-black"
